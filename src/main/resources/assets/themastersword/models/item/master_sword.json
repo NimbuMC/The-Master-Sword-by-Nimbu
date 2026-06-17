@@ -1,0 +1,6 @@
+{
+  "parent": "themastersword:item/handheld_double",
+  "textures": {
+    "layer0": "themastersword:item/master_sword"
+  }
+}
