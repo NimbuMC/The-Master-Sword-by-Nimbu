@@ -63,14 +63,19 @@ public class MasterSwordItem extends SwordItem {
                 repairItem(stack, entity);
             }
         }
+        else { //only power up/down if charged
 
-        boolean hostileNearby = !level.getEntitiesOfClass(
-                Monster.class,
-                entity.getBoundingBox().inflate(22),
-                LivingEntity::isAlive
-        ).isEmpty();
-        stack.set(ModDataComponents.POWERED, hostileNearby);
-
+            boolean hostileNearby = !level.getEntitiesOfClass(
+                    Monster.class,
+                    entity.getBoundingBox().inflate(22),
+                    LivingEntity::isAlive
+            ).isEmpty();
+            boolean isPowered = stack.getOrDefault(ModDataComponents.POWERED, false);
+            if (hostileNearby && !isPowered){
+                powerUp(stack, entity);}
+            else if (!hostileNearby && isPowered){
+                powerDown(stack, entity);}
+        }
     }
 
     @Override
@@ -85,29 +90,36 @@ public class MasterSwordItem extends SwordItem {
         }
     }
 
+    private void powerUp(ItemStack stack, Entity holder){
+        modifyAttackDamage(stack, 11);
+
+        //Set to power up
+        stack.set(ModDataComponents.POWERED, true);
+
+        //Audio
+        Level level = holder.level();
+
+        level.playSound(
+                null,
+                holder.getX(),
+                holder.getY(),
+                holder.getZ(),
+                SoundEvents.BEACON_ACTIVATE,
+                SoundSource.PLAYERS,
+                1.0F,
+                1.0F
+        );
+    }
+    private void powerDown(ItemStack stack, Entity holder){
+        modifyAttackDamage(stack, 7);
+
+        //Set to normal
+        stack.set(ModDataComponents.POWERED, false);
+    }
+
     private void breakItem(ItemStack stack, LivingEntity holder){
 
-        ItemAttributeModifiers old = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        for (ItemAttributeModifiers.Entry e : old.modifiers()) {
-            if (e.attribute() != Attributes.ATTACK_DAMAGE) {
-                builder.add(e.attribute(), e.modifier(), e.slot());
-            }
-            else{
-                builder.add(
-                        Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(
-                                ResourceLocation.withDefaultNamespace("base_attack_damage"),
-                                0.0,
-                                AttributeModifier.Operation.ADD_VALUE
-                        ),
-                        EquipmentSlotGroup.MAINHAND
-                );
-            }
-        }
-        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
+        modifyAttackDamage(stack, 0);
 
         //Set to recharge
         stack.set(ModDataComponents.RECHARGING, true);
@@ -126,30 +138,9 @@ public class MasterSwordItem extends SwordItem {
                 1.0F
         );
     }
-
     private void repairItem(ItemStack stack, Entity holder){
 
-        ItemAttributeModifiers old = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        for (ItemAttributeModifiers.Entry e : old.modifiers()) {
-            if (e.attribute() != Attributes.ATTACK_DAMAGE) {
-                builder.add(e.attribute(), e.modifier(), e.slot());
-            }
-            else{
-                builder.add(
-                        Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(
-                                ResourceLocation.withDefaultNamespace("base_attack_damage"),
-                                9.0 + ModTiers.Master.getAttackDamageBonus(),
-                                AttributeModifier.Operation.ADD_VALUE
-                        ),
-                        EquipmentSlotGroup.MAINHAND
-                );
-            }
-        }
-        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
+        modifyAttackDamage(stack, 7);
 
         //Stop recharging
         stack.set(ModDataComponents.RECHARGING, false);
@@ -170,6 +161,30 @@ public class MasterSwordItem extends SwordItem {
                 1.0F,
                 1.0F
         );
+    }
+
+    private static void modifyAttackDamage(ItemStack stack, int newDamage){
+        ItemAttributeModifiers old = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+
+        for (ItemAttributeModifiers.Entry e : old.modifiers()) {
+            if (e.attribute() != Attributes.ATTACK_DAMAGE) {
+                builder.add(e.attribute(), e.modifier(), e.slot());
+            }
+            else{
+                builder.add(
+                        Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(
+                                ResourceLocation.withDefaultNamespace("base_attack_damage"),
+                                newDamage + ModTiers.Master.getAttackDamageBonus(),
+                                AttributeModifier.Operation.ADD_VALUE
+                        ),
+                        EquipmentSlotGroup.MAINHAND
+                );
+            }
+        }
+        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
     }
 
     public static boolean isMinimumDurability(ItemStack swordStack){

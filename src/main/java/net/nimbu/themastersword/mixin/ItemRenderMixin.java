@@ -9,6 +9,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.nimbu.themastersword.component.ModDataComponents;
 import net.nimbu.themastersword.items.ModItems;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +36,7 @@ public class ItemRenderMixin {
             BakedModel model,
             CallbackInfo ci
     ) {
-        if (stack.is(ModItems.MASTER_SWORD.get())) {
+        if (stack.is(ModItems.MASTER_SWORD.get()) && stack.getOrDefault(ModDataComponents.POWERED, false)) {
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             itemRenderer.render(Items.IRON_SWORD.getDefaultInstance(), displayContext, leftHanded, poseStack, buffer, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
             ci.cancel();
