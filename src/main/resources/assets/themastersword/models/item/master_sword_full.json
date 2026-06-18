@@ -1,0 +1,18 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "themastersword:item/master_sword_hand"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "themastersword:item/master_sword_gui"
+    },
+    "ground": {
+      "parent": "themastersword:item/master_sword_gui"
+    },
+    "fixed": {
+      "parent": "themastersword:item/master_sword_gui"
+    }
+  }
+}

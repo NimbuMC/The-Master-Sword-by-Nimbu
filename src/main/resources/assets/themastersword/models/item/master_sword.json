@@ -1,6 +1,26 @@
 {
-  "parent": "themastersword:item/handheld_double",
+  "parent": "item/handheld",
   "textures": {
-    "layer0": "themastersword:item/master_sword"
-  }
+    "layer0": "themastersword:item/broken_master_sword"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "broken": 0
+      },
+      "model": "themastersword:item/master_sword_full"
+    },
+    {
+      "predicate": {
+        "powered": 1
+      },
+      "model": "themastersword:item/master_sword_full_powered"
+    },
+    {
+      "predicate": {
+        "broken": 1
+      },
+      "model": "themastersword:item/broken_master_sword"
+    }
+  ]
 }

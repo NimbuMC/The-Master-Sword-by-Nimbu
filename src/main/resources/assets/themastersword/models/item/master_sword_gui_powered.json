@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "themastersword:item/master_sword_gui_powered"
+  }
+}
