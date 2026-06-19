@@ -4,5 +4,17 @@
     "sounds": [
       "themastersword:master_sword_hit"
     ]
+  },
+  "master_sword_transform": {
+    "subtitle": "sounds.themastersword.master_sword_transform",
+    "sounds": [
+      "themastersword:master_sword_transform"
+    ]
+  },
+  "master_sword_break": {
+    "subtitle": "sounds.themastersword.master_sword_break",
+    "sounds": [
+      "themastersword:master_sword_break"
+    ]
   }
 }

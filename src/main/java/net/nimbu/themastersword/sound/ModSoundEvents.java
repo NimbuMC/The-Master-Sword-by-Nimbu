@@ -14,8 +14,10 @@ public class ModSoundEvents {
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, TheMasterSword.MOD_ID);
 
     public static final Supplier<SoundEvent> MASTER_SWORD_HIT = registerSoundEvent("master_sword_hit");
+    public static final Supplier<SoundEvent> MASTER_SWORD_TRANSFORM = registerSoundEvent("master_sword_transform");
+    public static final Supplier<SoundEvent> MASTER_SWORD_BREAK = registerSoundEvent("master_sword_break");
 
-    private static final Supplier<SoundEvent> registerSoundEvent(String name){
+    private static Supplier<SoundEvent> registerSoundEvent(String name){
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(TheMasterSword.MOD_ID, name);
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(id));
     }

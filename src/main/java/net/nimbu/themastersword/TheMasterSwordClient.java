@@ -9,11 +9,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.nimbu.themastersword.component.ModDataComponents;
-import net.nimbu.themastersword.items.custom.MasterSwordItem;
 import net.nimbu.themastersword.items.ModItems;
+import net.nimbu.themastersword.particle.MasterSwordHitParticle;
+import net.nimbu.themastersword.particle.ModParticleTypes;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = TheMasterSword.MOD_ID, dist = Dist.CLIENT)
@@ -40,5 +42,11 @@ public class TheMasterSwordClient {
                             stack.getOrDefault(ModDataComponents.POWERED, false) ? 1.0F : 0.0F
             );
         });
+    }
+
+    @SubscribeEvent
+    public static void registerParticleFactories(RegisterParticleProvidersEvent event){
+        //event.registerSpriteSet(ModParticleTypes.MASTER_SWORD_POWERED_PARTICLE.get(), MasterSwordPoweredParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.MASTER_SWORD_HIT_PARTICLE.get(), MasterSwordHitParticle.Provider::new);
     }
 }

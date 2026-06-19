@@ -15,7 +15,7 @@ public class ModItems {
     public static final DeferredItem<Item> MASTER_SWORD = ITEMS.register("master_sword",
             () -> new MasterSwordItem(ModTiers.Master,
                     new Item.Properties()
-                            .attributes(SwordItem.createAttributes(ModTiers.Master, 9, -2.2F))
+                            .attributes(SwordItem.createAttributes(ModTiers.Master, 7, -2.2F))
                             .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false)
                             .rarity(Rarity.EPIC)));
 

@@ -3,7 +3,7 @@ package net.nimbu.themastersword.items.custom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -20,8 +20,10 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.nimbu.themastersword.component.ModDataComponents;
 import net.nimbu.themastersword.items.ModTiers;
+import net.nimbu.themastersword.particle.ModParticleTypes;
 import net.nimbu.themastersword.sound.ModSoundEvents;
 
 public class MasterSwordItem extends SwordItem {
@@ -73,12 +75,12 @@ public class MasterSwordItem extends SwordItem {
 
             boolean hostileNearby = !level.getEntitiesOfClass(
                     Monster.class,
-                    entity.getBoundingBox().inflate(18),
+                    entity.getBoundingBox().inflate(18).move(new Vec3(0,6,0)),
                     LivingEntity::isAlive
             ).isEmpty();
             boolean isPowered = stack.getOrDefault(ModDataComponents.POWERED, false);
             if (hostileNearby && !isPowered && !isRecharging){
-                powerUp(stack, entity);}
+                powerUp(stack, entity, isSelected);}
             else if (!hostileNearby && isPowered){
                 powerDown(stack, entity);}
         }
@@ -95,17 +97,31 @@ public class MasterSwordItem extends SwordItem {
                 if (attackStrength<0.5) {return super.hurtEnemy(stack, target, attacker);}
             }
 
-            Level level = attacker.level();
+            ServerLevel level = (ServerLevel) attacker.level();
             if (!level.isClientSide()) {
-                level.playSound(
-                        null,
-                        attacker.getX(), attacker.getY(), attacker.getZ(),
-                        ModSoundEvents.MASTER_SWORD_HIT.get(),
-                        SoundSource.PLAYERS,
-                        1.0F,
-                        1.2f
+//                level.playSound(
+//                        null,
+//                        attacker.getX(), attacker.getY(), attacker.getZ(),
+//                        ModSoundEvents.MASTER_SWORD_HIT.get(),
+//                        SoundSource.PLAYERS,
+//                        1.0F,
+//                        1.0f
+//                );
+
+                level.sendParticles(
+                        ModParticleTypes.MASTER_SWORD_HIT_PARTICLE.get(),
+                        target.getX(),
+                        target.getY() + target.getBbHeight() * 0.5,
+                        target.getZ(),
+                        1,     // count
+                        0.0,    // x spread
+                        0.0,    // y spread
+                        0.0,    // z spread
+                        0.0    // speed
                 );
             }
+
+
         }
         return super.hurtEnemy(stack, target, attacker);
     }
@@ -122,25 +138,27 @@ public class MasterSwordItem extends SwordItem {
         }
     }
 
-    private void powerUp(ItemStack stack, Entity holder){
+    private void powerUp(ItemStack stack, Entity holder, boolean isSelected){
         modifyAttackDamage(stack, 11);
 
         //Set to power up
         stack.set(ModDataComponents.POWERED, true);
 
         //Audio
-        Level level = holder.level();
+        if(isSelected) { //only play audio if held in hand
+            Level level = holder.level();
 
-        level.playSound(
-                null,
-                holder.getX(),
-                holder.getY(),
-                holder.getZ(),
-                SoundEvents.BEACON_ACTIVATE,
-                SoundSource.PLAYERS,
-                1.0F,
-                1.0F
-        );
+            level.playSound(
+                    null,
+                    holder.getX(),
+                    holder.getY(),
+                    holder.getZ(),
+                    ModSoundEvents.MASTER_SWORD_TRANSFORM.get(),
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    1.0F
+            );
+        }
     }
     private void powerDown(ItemStack stack, Entity holder){
         modifyAttackDamage(stack, 7);
@@ -164,7 +182,7 @@ public class MasterSwordItem extends SwordItem {
                 holder.getX(),
                 holder.getY(),
                 holder.getZ(),
-                SoundEvents.ITEM_BREAK,
+                ModSoundEvents.MASTER_SWORD_BREAK.get(),
                 SoundSource.PLAYERS,
                 1.0F,
                 1.0F
