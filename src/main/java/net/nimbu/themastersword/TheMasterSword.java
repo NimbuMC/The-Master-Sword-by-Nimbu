@@ -2,6 +2,7 @@ package net.nimbu.themastersword;
 
 import net.nimbu.themastersword.component.ModDataComponents;
 import net.nimbu.themastersword.items.ModItems;
+import net.nimbu.themastersword.sound.ModSoundEvents;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -38,6 +39,7 @@ public class TheMasterSword {
         modEventBus.addListener(this::addCreative);
         ModItems.register(modEventBus);
         ModDataComponents.register(modEventBus);
+        ModSoundEvents.register(modEventBus);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

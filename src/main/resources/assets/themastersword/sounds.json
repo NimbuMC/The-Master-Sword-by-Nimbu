@@ -1,0 +1,8 @@
+{
+  "master_sword_hit": {
+    "subtitle": "sounds.themastersword.master_sword_hit",
+    "sounds": [
+      "themastersword:master_sword_hit"
+    ]
+  }
+}

@@ -38,7 +38,7 @@ public class ItemRenderMixin {
     ) {
         if (stack.is(ModItems.MASTER_SWORD.get()) && stack.getOrDefault(ModDataComponents.POWERED, false)) {
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            itemRenderer.render(Items.IRON_SWORD.getDefaultInstance(), displayContext, leftHanded, poseStack, buffer, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
+            itemRenderer.render(Items.IRON_SWORD.getDefaultInstance(), displayContext, leftHanded, poseStack, buffer, 0xF000F0, overlay, model);
             ci.cancel();
         }
     }

@@ -3,6 +3,7 @@ package net.nimbu.themastersword.items.custom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
@@ -20,13 +22,14 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.nimbu.themastersword.component.ModDataComponents;
 import net.nimbu.themastersword.items.ModTiers;
+import net.nimbu.themastersword.sound.ModSoundEvents;
 
 public class MasterSwordItem extends SwordItem {
     public MasterSwordItem(Tier tier, Properties properties) {
         super(tier, properties);
     }
 
-    private static final int rechargeRate = 40; //240 default
+    private static final int rechargeRate = 40; //240 default //TODO: fix
 
     @Override
     public int getBarColor(ItemStack stack) {
@@ -56,6 +59,8 @@ public class MasterSwordItem extends SwordItem {
         if (level.isClientSide()) return;
 
         Boolean isRecharging = stack.getOrDefault(ModDataComponents.RECHARGING, false);
+        Boolean activeFrame = entity.tickCount % 20 == 0; //activates every 20 frames
+
         if (isRecharging){
             //recharge
             stack.setDamageValue(stack.getDamageValue()-1);
@@ -63,19 +68,46 @@ public class MasterSwordItem extends SwordItem {
                 repairItem(stack, entity);
             }
         }
-        else { //only power up/down if charged
+
+        if (activeFrame){ //only power up/down if charged, only check every second
 
             boolean hostileNearby = !level.getEntitiesOfClass(
                     Monster.class,
-                    entity.getBoundingBox().inflate(22),
+                    entity.getBoundingBox().inflate(18),
                     LivingEntity::isAlive
             ).isEmpty();
             boolean isPowered = stack.getOrDefault(ModDataComponents.POWERED, false);
-            if (hostileNearby && !isPowered){
+            if (hostileNearby && !isPowered && !isRecharging){
                 powerUp(stack, entity);}
             else if (!hostileNearby && isPowered){
                 powerDown(stack, entity);}
         }
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+
+        if(stack.getOrDefault(ModDataComponents.POWERED, false)){// && !stack.getOrDefault(ModDataComponents.RECHARGING, false)){
+
+
+            if (attacker instanceof Player player){ //prevent audio spamming
+                float attackStrength = player.getAttackStrengthScale(0.0F);
+                if (attackStrength<0.5) {return super.hurtEnemy(stack, target, attacker);}
+            }
+
+            Level level = attacker.level();
+            if (!level.isClientSide()) {
+                level.playSound(
+                        null,
+                        attacker.getX(), attacker.getY(), attacker.getZ(),
+                        ModSoundEvents.MASTER_SWORD_HIT.get(),
+                        SoundSource.PLAYERS,
+                        1.0F,
+                        1.2f
+                );
+            }
+        }
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
@@ -200,4 +232,6 @@ public class MasterSwordItem extends SwordItem {
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged; //stops animation occurring when powering on and repairing
     }
+
+
 }
