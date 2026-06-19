@@ -31,7 +31,7 @@ public class MasterSwordItem extends SwordItem {
         super(tier, properties);
     }
 
-    private static final int rechargeRate = 40; //240 default //TODO: fix
+    private static final float rechargeRate = 240;
 
     @Override
     public int getBarColor(ItemStack stack) {
@@ -63,10 +63,10 @@ public class MasterSwordItem extends SwordItem {
         Boolean isRecharging = stack.getOrDefault(ModDataComponents.RECHARGING, false);
         Boolean activeFrame = entity.tickCount % 20 == 0; //activates every 20 frames
 
-        if (isRecharging){
+        if (isRecharging && entity.tickCount % rechargeRate == 0){
             //recharge
             stack.setDamageValue(stack.getDamageValue()-1);
-            if (stack.getDamageValue()==0 && entity.tickCount % rechargeRate == 0) { //recharges fully every 20 minutes
+            if (stack.getDamageValue()==0) { //recharges fully every 20 minutes
                 repairItem(stack, entity);
             }
         }
@@ -130,7 +130,6 @@ public class MasterSwordItem extends SwordItem {
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (!isMinimumDurability(stack)) { //dont allow sword to permanently break
             super.postHurtEnemy(stack, target, attacker);
-            stack.hurtAndBreak(8, attacker, EquipmentSlot.MAINHAND); //TODO: REMOVE
 
             if (isMinimumDurability(stack)){ //if sword has been damaged enough to no longer take damage, it must break
                 this.breakItem(stack, attacker);
