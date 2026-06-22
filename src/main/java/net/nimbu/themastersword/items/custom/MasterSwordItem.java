@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -31,7 +30,9 @@ public class MasterSwordItem extends SwordItem {
         super(tier, properties);
     }
 
-    private static final float rechargeRate = 240;
+    private static final float RECHARGE_RATE = 240;
+    private static final int BASE_ATTACK_DAMAGE = 7;
+    private static final int BONUS_ATTACK_DAMAGE = 4;
 
     @Override
     public int getBarColor(ItemStack stack) {
@@ -63,7 +64,7 @@ public class MasterSwordItem extends SwordItem {
         Boolean isRecharging = stack.getOrDefault(ModDataComponents.RECHARGING, false);
         Boolean activeFrame = entity.tickCount % 20 == 0; //activates every 20 frames
 
-        if (isRecharging && entity.tickCount % rechargeRate == 0){
+        if (isRecharging && entity.tickCount % RECHARGE_RATE == 0){
             //recharge
             stack.setDamageValue(stack.getDamageValue()-1);
             if (stack.getDamageValue()==0) { //recharges fully every 20 minutes
@@ -138,7 +139,7 @@ public class MasterSwordItem extends SwordItem {
     }
 
     private void powerUp(ItemStack stack, Entity holder, boolean isSelected){
-        modifyAttackDamage(stack, 11);
+        modifyAttackDamage(stack, BASE_ATTACK_DAMAGE + BONUS_ATTACK_DAMAGE);
 
         //Set to power up
         stack.set(ModDataComponents.POWERED, true);
@@ -160,7 +161,7 @@ public class MasterSwordItem extends SwordItem {
         }
     }
     private void powerDown(ItemStack stack, Entity holder){
-        modifyAttackDamage(stack, 7);
+        modifyAttackDamage(stack, BASE_ATTACK_DAMAGE);
 
         //Set to normal
         stack.set(ModDataComponents.POWERED, false);
@@ -189,7 +190,7 @@ public class MasterSwordItem extends SwordItem {
     }
     private void repairItem(ItemStack stack, Entity holder){
 
-        modifyAttackDamage(stack, 7);
+        modifyAttackDamage(stack, BASE_ATTACK_DAMAGE);
 
         //Stop recharging
         stack.set(ModDataComponents.RECHARGING, false);

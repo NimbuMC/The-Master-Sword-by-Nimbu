@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": {
+      "item": "minecraft:breeze_rod"
+    },
+    "X": {
+      "item": "minecraft:nether_star"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "I",
+    "X",
+    "#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "themastersword:master_sword"
+  }
+}
